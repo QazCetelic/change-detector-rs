@@ -15,6 +15,16 @@ impl <T> ChangeDetector<T> where T : Hash {
         }
     }
 
+    /// Check if detector has been used
+    pub fn untouched(&self) -> bool {
+        self.hash == 0
+    }
+
+    /// Access the inner hash
+    pub fn hash(&self) -> u64 {
+        self.hash
+    }
+
     /// Returns Some when the value differs or is the first value
     pub fn detect<'a>(&mut self, value: &'a T) -> Option<&'a T> {
         let mut hasher = DefaultHasher::new();
