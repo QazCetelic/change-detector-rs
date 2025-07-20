@@ -15,7 +15,7 @@ impl <T> ChangeDetector<T> where T : Hash {
         }
     }
 
-    /// Returns Some()
+    /// Returns Some when the value differs or is the first value
     pub fn detect<'a>(&mut self, value: &'a T) -> Option<&'a T> {
         let mut hasher = DefaultHasher::new();
         value.hash(&mut hasher);
@@ -69,5 +69,26 @@ mod tests {
         assert_eq!(string_change_detector.detect_owned(b1), Some("B".to_string()));
         let b2 = "B".to_string();
         assert_eq!(string_change_detector.detect_owned(b2), None);
+    }
+
+    #[test]
+    fn example_works() {
+        let mut writes = 0_usize;
+
+        let mut write_to_file = |change_detector: &mut ChangeDetector<Vec<usize>>, nums: Vec<usize>| {
+            if let Some(_nums) = change_detector.detect_owned(nums) {
+                // WRITE DATA TO SOME FILE
+                writes += 1;
+            }
+        };
+
+        let mut change_detector = ChangeDetector::<Vec<usize>>::new();
+
+        write_to_file(&mut change_detector, vec![1, 2, 3]);
+        write_to_file(&mut change_detector, vec![1, 2, 3]);
+        write_to_file(&mut change_detector, vec![1, 2, 3, 4]);
+        write_to_file(&mut change_detector, vec![1, 2, 3, 4]);
+
+        assert_eq!(writes, 2);
     }
 }
